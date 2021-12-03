@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using CsvHelper;
-using CsvHelper.Configuration.Attributes;
 
 namespace _01
 {
@@ -12,74 +10,68 @@ namespace _01
     {
         static void Main(string[] args)
         {
-            using (var reader = new StreamReader("measurements.txt"))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                var records = csv.GetRecords<Measurement>();
+            
+            var records = File.ReadLines("measurements.txt");
 
-                Console.WriteLine("Start analyzing all measurements...");
-                Analyze(records);
-            }
+            Console.WriteLine("Start analyzing all measurements...");
+            Analyze(records);
 
-            using (var reader = new StreamReader("measurements.txt"))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                var records = csv.GetRecords<Measurement>();
-
-                Console.WriteLine();
-                Console.WriteLine("Start analyzing summarized measurements...");
-                var sumarizedMeasurements = SumarizeMeasurements(records);
-                Analyze(sumarizedMeasurements);
-                
-            }
+            Console.WriteLine();
+            Console.WriteLine("Start analyzing summarized measurements...");
+            var sumarizedMeasurements = SumarizeMeasurements(records);
+            Analyze(sumarizedMeasurements);
         }
 
-        public static IEnumerable<Measurement> SumarizeMeasurements(IEnumerable<Measurement> measurements)
+        public static IEnumerable<string> SumarizeMeasurements(IEnumerable<string> measurements)
         {
-            IList<Measurement> sumarizedMeasurements = new List<Measurement>();
+            IList<string> sumarizedMeasurements = new List<string>();
             IList<int> values = new List<int>();
 
             foreach (var measurement in measurements)
             {
+                int currentValue = Int32.Parse(measurement);
+                
                 if (values.Count < 3)
                 {
-                    values.Add(measurement.Depth);
+                    values.Add(currentValue);
                 }
                 else {
-                    sumarizedMeasurements.Add(new Measurement{Depth = values.Sum()});
+                    sumarizedMeasurements.Add(values.Sum().ToString());
                     values.RemoveAt(0);
-                    values.Add(measurement.Depth);
+                    values.Add(currentValue);
                 }                
             }
 
-            sumarizedMeasurements.Add(new Measurement{Depth = values.Sum()});
+            sumarizedMeasurements.Add(values.Sum().ToString());
             return sumarizedMeasurements;
         }
 
-        public static void Analyze(IEnumerable<Measurement> measurements)
+        public static void Analyze(IEnumerable<string> measurements)
         {
             int prevValue = -1;
             int counter = 0;
 
             foreach (var measurement in measurements)
             {
+                int currentMeasurement = Int32.Parse(measurement);
+                
                 if (prevValue == -1)
                 {
-                    prevValue = measurement.Depth;
-                    Console.WriteLine($"{measurement.Depth} (N/A, no prev value)");
+                    prevValue = currentMeasurement;
+                    Console.WriteLine($"{currentMeasurement} (N/A, no prev value)");
                 }
                 else
                 {
-                    if (measurement.Depth > prevValue)
+                    if (currentMeasurement > prevValue)
                     {
-                        prevValue = measurement.Depth;
+                        prevValue = currentMeasurement;
                         counter++;
-                        Console.WriteLine($"{measurement.Depth} (increased)");
+                        Console.WriteLine($"{currentMeasurement} (increased)");
                     }
                     else
                     {
-                        prevValue = measurement.Depth;
-                        Console.WriteLine($"{measurement.Depth} (decreased)");
+                        prevValue = currentMeasurement;
+                        Console.WriteLine($"{currentMeasurement} (decreased)");
                     }
                 }
             }
@@ -87,11 +79,5 @@ namespace _01
             Console.WriteLine();
             Console.WriteLine($"Total increased: {counter}");
         }
-    }
-
-    public class Measurement {
-        
-        [Index(0)]
-        public int Depth { get; set; }
     }
 }

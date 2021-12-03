@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace _02
 {
@@ -6,7 +7,12 @@ namespace _02
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            string fileName = "test.txt";
+            
+            foreach (var line in File.ReadLines(fileName))
+            {
+                Console.WriteLine(line.ToString());
+            }
         }
     }
 }
