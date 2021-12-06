@@ -12,12 +12,16 @@ namespace _04
             var input = File.ReadAllLines("input.txt");
             var numbers = input[0].Split(",").Select(Int32.Parse).ToList();
             var tiles = ParseTiles(input);
-            FindWinningGrid(tiles, numbers);
+            PlayBingo(tiles, numbers);
         }
-
-        public static void FindWinningGrid(List<Tile> tiles, List<int> numbers)
+        
+        public static void PlayBingo(List<Tile> tiles, List<int> numbers)
         {
-            bool bingo = false;
+            int gridCount = tiles.GroupBy(t => t.Grid)
+                .Select(g => g.First())
+                .Count();
+            int bingoCount = 0;
+            List<int> gridsWithBingo = new List<int>();
 
             foreach (var number in numbers)
             {
@@ -32,24 +36,42 @@ namespace _04
 
                     if (markedInCurrentRow == 5)
                     {
-                        var puzzleAnswer = (from Tile in tiles
-                        where Tile.Grid == matchingTile.Grid && Tile.IsMarked == false
-                        select Tile.Value).Sum() * matchingTile.Value;
-                        
-                        Console.WriteLine();
-                        Console.WriteLine("BINGO!");
-                        Console.WriteLine($"Winning row: {matchingTile.GridRow} on grid: {matchingTile.Grid}");
-                        Console.WriteLine();
-                        Console.WriteLine($"Puzzle answer: {puzzleAnswer}");
-                        bingo = true;
-                        break;
+                        bingoCount++;
+                        var gridAllreadHasBingo = gridsWithBingo.Exists(g => g == matchingTile.Grid);
+
+                        if (bingoCount == 1)
+                        {
+                            var puzzleAnswer = (from Tile in tiles
+                            where Tile.Grid == matchingTile.Grid && Tile.IsMarked == false
+                            select Tile.Value).Sum() * matchingTile.Value;
+                            
+                            Console.WriteLine();
+                            Console.WriteLine("BINGO!");
+                            Console.WriteLine($"Winning row: {matchingTile.GridRow} on grid: {matchingTile.Grid}");
+                            Console.WriteLine();
+                            Console.WriteLine($"Puzzle answer: {puzzleAnswer}");
+                        }
+                        else if (gridsWithBingo.Count() == gridCount -1 && gridAllreadHasBingo == false)
+                        {
+                            var puzzleAnswer = (from Tile in tiles
+                            where Tile.Grid == matchingTile.Grid && Tile.IsMarked == false
+                            select Tile.Value).Sum() * matchingTile.Value;
+
+                            Console.WriteLine();
+                            Console.WriteLine("LOOSER!");
+                            Console.WriteLine($"Last bingo row: {matchingTile.GridRow} on grid: {matchingTile.Grid}");
+                            Console.WriteLine();
+                            Console.WriteLine($"Puzzle answer: {puzzleAnswer}");
+                        }
+
+                        if (!gridAllreadHasBingo) {
+                            gridsWithBingo.Add(matchingTile.Grid);
+                        }
                     }
                 }
-
-                if (bingo) { break; }
             }
 
-            if (!bingo)
+            if (bingoCount < 1)
             {
                 Console.WriteLine();
                 Console.WriteLine("No winner here...");
