@@ -11,22 +11,23 @@ namespace _04
         {
             var input = File.ReadAllLines("test.txt");
             var numbers = input[0].Split(",").Select(Int32.Parse).ToList();
-            BuildGrids(input);
+            var grids = BuildGrids(input);
         }
 
-        public static void BuildGrids(string[] input)
+        public static IList<Grid> BuildGrids(string[] input)
         {
             int currentRow = 0;
+            IList<Grid> gridResult = new List<Grid>();
             Grid tempGrid  = new Grid { Rows = new List<List<Tile>>() };
 
             for ( var i=2; i < input.Length; i++)
             {
                 if (currentRow == 0)
                 {
-                    tempGrid = new Grid();
+                    tempGrid = new Grid { Rows = new List<List<Tile>>() };
                 }
 
-                input[i] = input[i].Replace("  ", " ");
+                input[i] = input[i].Replace("  ", " ").Trim();
                 var currentRowNumbers = input[i].Split(" ").Select(Int32.Parse).ToArray();
                 tempGrid.Rows.Add(new List<Tile>());
                 foreach (var number in currentRowNumbers)
@@ -38,11 +39,14 @@ namespace _04
 
                 if (currentRow > 4)
                 {
+                    gridResult.Add(tempGrid);
                     currentRow = 0;
                     i++;
                 }
 
             }
+
+            return gridResult;
         }
     }
 
