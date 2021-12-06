@@ -9,55 +9,87 @@ namespace _04
     {
         static void Main(string[] args)
         {
-            var input = File.ReadAllLines("test.txt");
+            var input = File.ReadAllLines("input.txt");
             var numbers = input[0].Split(",").Select(Int32.Parse).ToList();
-            var grids = BuildGrids(input);
+            var tiles = ParseTiles(input);
+            FindWinningGrid(tiles, numbers);
         }
 
-        public static IList<Grid> BuildGrids(string[] input)
+        public static void FindWinningGrid(List<Tile> tiles, List<int> numbers)
+        {
+            bool bingo = false;
+
+            foreach (var number in numbers)
+            {
+                var matchingTiles = tiles.Where(t => t.Value == number).ToList();
+                
+                foreach (var matchingTile in matchingTiles)
+                {
+                    matchingTile.IsMarked = true;
+                    var markedInCurrentRow = (from Tile in tiles
+                    where Tile.Grid == matchingTile.Grid && Tile.GridRow == matchingTile.GridRow && Tile.IsMarked == true
+                    select Tile.IsMarked).Count();
+
+                    if (markedInCurrentRow == 5)
+                    {
+                        var puzzleAnswer = (from Tile in tiles
+                        where Tile.Grid == matchingTile.Grid && Tile.IsMarked == false
+                        select Tile.Value).Sum() * matchingTile.Value;
+                        
+                        Console.WriteLine();
+                        Console.WriteLine("BINGO!");
+                        Console.WriteLine($"Winning row: {matchingTile.GridRow} on grid: {matchingTile.Grid}");
+                        Console.WriteLine();
+                        Console.WriteLine($"Puzzle answer: {puzzleAnswer}");
+                        bingo = true;
+                        break;
+                    }
+                }
+
+                if (bingo) { break; }
+            }
+
+            if (!bingo)
+            {
+                Console.WriteLine();
+                Console.WriteLine("No winner here...");
+            }
+        }
+        
+        public static List<Tile> ParseTiles(string[] input)
         {
             int currentRow = 0;
-            IList<Grid> gridResult = new List<Grid>();
-            Grid tempGrid  = new Grid { Rows = new List<List<Tile>>() };
+            int currentGrid = 0;
+            List<Tile> parsedTiles = new List<Tile>();
 
             for ( var i=2; i < input.Length; i++)
             {
-                if (currentRow == 0)
-                {
-                    tempGrid = new Grid { Rows = new List<List<Tile>>() };
-                }
-
                 input[i] = input[i].Replace("  ", " ").Trim();
                 var currentRowNumbers = input[i].Split(" ").Select(Int32.Parse).ToArray();
-                tempGrid.Rows.Add(new List<Tile>());
+
                 foreach (var number in currentRowNumbers)
                 {
-                    tempGrid.Rows.LastOrDefault().Add(new Tile { Value = number, IsMarked = false});
+                    parsedTiles.Add(new Tile {Value = number, Grid = currentGrid, GridRow = currentRow, IsMarked = false});
                 }
 
                 currentRow++;
 
                 if (currentRow > 4)
                 {
-                    gridResult.Add(tempGrid);
                     currentRow = 0;
+                    currentGrid++;
                     i++;
                 }
-
             }
-
-            return gridResult;
+            return parsedTiles;
         }
     }
 
     public class Tile
     {
         public int Value { get; set; }
+        public int Grid { get; set;}
+        public int GridRow { get; set; }
         public bool IsMarked { get; set; }
-    }
-
-    public class Grid
-    {
-        public IList<List<Tile>> Rows { get; set; }
     }
 }
