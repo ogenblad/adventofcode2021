@@ -10,24 +10,18 @@ namespace _06
     {
         static void Main(string[] args)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             var input = File.ReadAllText("input.txt");
             var numbers = input.Split(",").Select(Int32.Parse).ToList();
             
-            Stopwatch sw1 = new Stopwatch();
-            Stopwatch sw2 = new Stopwatch();
-            
-            sw1.Start();
             long a1 = CountFishes(numbers, 80);
-            sw1.Stop();
-
-            sw2.Start();
             long a2 = CountFishes(numbers, 256);
-            sw2.Stop();
-
-
-            Console.WriteLine($"Assigment1: {a1}, {sw1.Elapsed.TotalMilliseconds}ms");
-            Console.WriteLine($"Assigment2: {a2}, {sw2.Elapsed.TotalMilliseconds}ms");
-            Console.WriteLine($"Total time: {sw1.Elapsed.TotalMilliseconds + sw2.Elapsed.TotalMilliseconds}ms");
+            
+            sw.Stop();
+            Console.WriteLine($"Assigment1: {a1}");
+            Console.WriteLine($"Assigment2: {a2}");
+            Console.WriteLine($"Total time: {sw.Elapsed.TotalMilliseconds}ms");
         }
 
         public static long CountFishes(List<int> initial, int numberOfDays)
