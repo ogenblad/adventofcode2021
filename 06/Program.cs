@@ -25,9 +25,9 @@ namespace _06
             sw2.Stop();
 
 
-            Console.WriteLine($"Assigment1: {a1}, {sw1.ElapsedMilliseconds}ms");
-            Console.WriteLine($"Assigment1: {a2}, {sw2.ElapsedMilliseconds}ms");
-            Console.WriteLine($"Total time: {sw1.ElapsedMilliseconds + sw2.ElapsedMilliseconds}ms");
+            Console.WriteLine($"Assigment1: {a1}, {sw1.Elapsed.TotalMilliseconds}ms");
+            Console.WriteLine($"Assigment2: {a2}, {sw2.Elapsed.TotalMilliseconds}ms");
+            Console.WriteLine($"Total time: {sw1.Elapsed.TotalMilliseconds + sw2.Elapsed.TotalMilliseconds}ms");
         }
 
         public static long CountFishes(List<int> initial, int numberOfDays)
