@@ -19,7 +19,7 @@ namespace _07
 
             Console.WriteLine($"TASK1: Least amount of consumed fuel: {result[0].Item1}, target position: {result[0].Item2}");
             Console.WriteLine($"TASK2: Least amount of consumed fuel: {result[1].Item1}, target position: {result[1].Item2}");
-            Console.WriteLine($"Execution time: {sw.Elapsed.TotalMilliseconds}");
+            Console.WriteLine($"Execution time: {sw.Elapsed.TotalMilliseconds}ms");
         }
 
         public static List<Tuple<int, int>> FindOptimalPosition(List<int> input)
