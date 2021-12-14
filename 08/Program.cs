@@ -13,7 +13,7 @@ namespace _08
             // Read input values and parse signal patterns by pipe to new array
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            var input = File.ReadAllLines("test.txt");
+            var input = File.ReadAllLines("input.txt");
             List<Tuple<string, string>> signalPatterns = new List<Tuple<string, string>>();
             foreach (var row in input)
             {
